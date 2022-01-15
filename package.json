@@ -12,6 +12,11 @@
 		"lint:fix": "eslint --fix .",
 		"prepare": "husky install"
 	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
 	"author": "phdang",
 	"license": "ISC",
 	"dependencies": {
