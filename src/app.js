@@ -5,6 +5,7 @@ require('dotenv').config()
 //const route =  require('./routes/web');
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const logger = require('./lib/logger')
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(cors())
 
 // Routes
 // route(app);
+logger.error('EROR')
 
 app.get('/', (req, res) => {
 	res.send('Hello World!')
@@ -23,6 +25,5 @@ app.get('/', (req, res) => {
 const port = process.env.PORT || 8080
 
 app.listen(port, () => {
-	// eslint-disable-next-line no-console
-	console.log(`Server is running at the port : ${port}`)
+	logger.info(`Server is running at the port : ${port}`)
 })
