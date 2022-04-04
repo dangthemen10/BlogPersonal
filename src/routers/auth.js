@@ -10,10 +10,20 @@ const authVaidation = require('../validation/auth')
  * register account
  */
 router.post(
-	'/register',
-	authVaidation.validationRegister(),
+	'/auth/register',
+	authVaidation.validationAuth(),
 	validateHandle,
 	authController.register
+)
+
+/**
+ * register account
+ */
+router.post(
+	'/auth/login',
+	authVaidation.validationAuth(),
+	validateHandle,
+	authController.login
 )
 
 module.exports = router

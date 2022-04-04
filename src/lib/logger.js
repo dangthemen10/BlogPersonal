@@ -1,7 +1,8 @@
 'use-strict'
 
 const winston = require('winston')
-const date = require('./dateUtils').getDateFormat()
+const moment = require('moment-timezone')
+moment.tz.setDefault('Asia/Ho_Chi_Minh')
 
 //
 // Logging levels
@@ -41,7 +42,7 @@ const logger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.File({
-			filename: `./log/log_${date}.log`,
+			filename: `./log/log_${moment(new Date()).format('YYYYMMDD')}.log`,
 			levels: config.levels,
 		}),
 	],

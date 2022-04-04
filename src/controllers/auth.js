@@ -12,7 +12,7 @@ const authServices = require('../services/auth')
  */
 const register = async (req, res, next) => {
 	try {
-		const result = await authServices.createUser(
+		const result = await authServices.register(
 			req.body.email,
 			req.body.password
 		)
@@ -22,6 +22,24 @@ const register = async (req, res, next) => {
 	}
 }
 
+/**
+ * Login
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns
+ */
+const login = async (req, res, next) => {
+	try {
+		const result = await authServices.login(req.body.email, req.body.password)
+		return res.status(200).json(result)
+	} catch (error) {
+		next(error)
+	}
+}
+
 module.exports = {
 	register,
+	login,
 }

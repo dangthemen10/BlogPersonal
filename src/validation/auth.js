@@ -1,6 +1,6 @@
 const { body } = require('express-validator')
 
-const validationRegister = () => {
+const validationAuth = () => {
 	return [
 		body('email')
 			.not()
@@ -20,5 +20,5 @@ const validationRegister = () => {
 }
 
 module.exports = {
-	validationRegister,
+	validationAuth,
 }

@@ -4,15 +4,21 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const db = require('../models')
 const sequelize = require('../models').sequelize
-const User = db.user
-const Account = db.account
-const { badRequestException } = require('../lib/exception')
+const UserModel = db.user
+const AccountModel = db.account
+const { badRequestException, notFoundException } = require('../lib/exception')
 const dateUtils = require('../lib/dateUtils')
 const logger = require('../lib/logger')
-const hashPass = require('../lib/hashPassword')
+const passwordLib = require('../lib/passwordLib')
 
+/**
+ * Find User By Email
+ *
+ * @param {*} email
+ * @returns user
+ */
 const findOneUserByEmail = async (email) => {
-	const result = await Account.findOne({
+	const result = await AccountModel.findOne({
 		where: {
 			email: {
 				[Op.like]: email,
@@ -24,17 +30,23 @@ const findOneUserByEmail = async (email) => {
 	return result
 }
 
-// const validationUser = async (email) => {
-// 	const user = await findOneUserByEmail(email)
+/**
+ * Validation user email
+ *
+ * @param {*} email
+ * @returns
+ */
+const validationUserEmail = async (email) => {
+	const user = await findOneUserByEmail(email)
 
-// 	if (user == null) {
-// 		throw notFoundException({
-// 			status: 'NOT_FOUND',
-// 			message: `Cannot find User with email: ${email} !`,
-// 		})
-// 	}
-// 	return user
-// }
+	if (user == null) {
+		throw notFoundException({
+			status: 'NOT_FOUND',
+			message: `Cannot find User with email: ${email} !`,
+		})
+	}
+	return user
+}
 
 const isEmailExist = async (email) => {
 	const result = await findOneUserByEmail(email)
@@ -47,12 +59,12 @@ const isEmailExist = async (email) => {
 }
 
 /**
- * Create user and account
+ * register account
  * @param {*} email
  * @param {*} password
  * @returns
  */
-const createUser = async (email, password) => {
+const register = async (email, password) => {
 	const now = dateUtils.getDateTimeCurrent()
 	const transaction = await sequelize.transaction()
 	if (!email || !password) {
@@ -73,11 +85,11 @@ const createUser = async (email, password) => {
 	}
 
 	//hash password with bcrypt
-	const hashPassword = await hashPass.hashPassword(password)
+	const hashPassword = await passwordLib.hashPassword(password)
 
 	try {
 		// create account
-		const account = await Account.create(
+		const account = await AccountModel.create(
 			{
 				email: email,
 				password: hashPassword,
@@ -88,7 +100,7 @@ const createUser = async (email, password) => {
 			{ transaction }
 		)
 		// create user
-		await User.create(
+		await UserModel.create(
 			{
 				email: email,
 				username: null,
@@ -114,6 +126,35 @@ const createUser = async (email, password) => {
 	}
 }
 
+const login = async (email, password) => {
+	if (!email || !password) {
+		throw badRequestException({
+			status: 'BAD_REQUEST',
+			message: 'Parameter is not exist!',
+		})
+	}
+
+	// validation email to get user
+	const user = await validationUserEmail(email)
+
+	// verify password
+	const checkPassword = await passwordLib.verifyPassword(
+		password,
+		user.password
+	)
+
+	if (!checkPassword) {
+		throw notFoundException({
+			status: 'NOT_FOUND',
+			message: 'Password is wrong!',
+		})
+	}
+
+	logger.info('Check password successfully!')
+	return user
+}
+
 module.exports = {
-	createUser,
+	register,
+	login,
 }
