@@ -1,22 +1,49 @@
 'use-strict'
 
-const getDateTimeCurrent = () => {
-	const today = new Date()
-	const date = `${today.getFullYear()}-${
-		today.getMonth() + 1
-	}-${today.getDate()}`
-	const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`
-	return new Date(`${date} ${time}`)
+const moment = require('moment-timezone')
+const logger = require('./logger')
+moment.tz.setDefault('Asia/Ho_Chi_Minh')
+
+const DATE_FORMAT_1 = 'YYYY-MM-DD HH:mm:ss'
+const DATE_FORMAT_2 = 'YYYY/MM/DD HH:mm:ss'
+
+/**
+ * getDateTimeCurrent
+ * @param {*} format
+ * @returns
+ */
+const getDateTimeCurrent = (format = DATE_FORMAT_1) => {
+	return moment().format(format)
 }
 
-const getDateFormat = () => {
-	const today = new Date()
-	const date = `${today.getFullYear()}${today.getMonth() + 1}${today.getDate()}`
-	const time = `${today.getHours()}${today.getMinutes()}${today.getSeconds()}`
-	return `${date}${time}`
+const formatDateTime = (dateTime) => {
+	if (dateTime === null) return null
+	if (dateTime === '') return ''
+	try {
+		return moment(dateTime).format(DATE_FORMAT_1)
+	} catch (error) {
+		logger.warn(
+			`formatDateTime error value: ${dateTime} error: ${error.message}`
+		)
+		return null
+	}
+}
+
+const formatDateTimeV1 = (dateTime) => {
+	if (dateTime === null) return null
+	if (dateTime === '') return ''
+	try {
+		return moment(dateTime).format(DATE_FORMAT_2)
+	} catch (error) {
+		logger.warn(
+			`formatDateTime error value: ${dateTime} error: ${error.message}`
+		)
+		return null
+	}
 }
 
 module.exports = {
 	getDateTimeCurrent,
-	getDateFormat,
+	formatDateTime,
+	formatDateTimeV1,
 }

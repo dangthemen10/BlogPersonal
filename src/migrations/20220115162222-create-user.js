@@ -9,48 +9,44 @@ module.exports = {
 				primaryKey: true,
 				type: Sequelize.INTEGER,
 			},
-			username: {
+			email: {
 				type: Sequelize.STRING,
 				allowNull: false,
+			},
+			username: {
+				type: Sequelize.STRING,
 			},
 			fullname: {
 				type: Sequelize.STRING,
-				allowNull: true,
 			},
 			day_of_birth: {
 				type: Sequelize.DATE,
-				allowNull: true,
 			},
 			address: {
 				type: Sequelize.STRING,
-				allowNull: true,
 			},
 			phone: {
 				type: Sequelize.INTEGER,
-				allowNull: true,
 			},
 			gender: {
 				type: Sequelize.STRING,
-				allowNull: true,
 			},
 			country: {
 				type: Sequelize.STRING,
-				allowNull: true,
 			},
 			account_id: {
 				type: Sequelize.INTEGER,
-				allowNull: false,
 				references: {
 					model: 'Accounts',
 					key: 'id',
 				},
 				onDelete: 'CASCADE',
 			},
-			created_at: {
+			createdAt: {
 				allowNull: false,
 				type: Sequelize.DATE,
 			},
-			updated_at: {
+			updatedAt: {
 				allowNull: false,
 				type: Sequelize.DATE,
 			},

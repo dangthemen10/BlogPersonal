@@ -2,9 +2,13 @@
 
 const express = require('express')
 require('dotenv').config()
-//const route =  require('./routes/web');
+const router = require('./routers')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const {
+	notFoundError,
+	internalServerError,
+} = require('./middleware/errorHandler')
 const logger = require('./lib/logger')
 
 const app = express()
@@ -15,12 +19,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
 // Routes
-// route(app);
-logger.error('EROR')
+app.use('/api/v1', router)
 
-app.get('/', (req, res) => {
-	res.send('Hello World!')
-})
+//error handle
+app.use(notFoundError)
+app.use(internalServerError)
 
 const port = process.env.PORT || 8080
 

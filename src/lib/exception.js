@@ -3,22 +3,26 @@
 const NOT_FOUND = 404
 const BAD_REQUEST = 400
 const UNAUTHORIZED = 401
-const exception = (code, detail) => {
+const FORBIDDEN = 403
+const exception = (status, message) => {
 	const error = {}
-	error.code = code
-	error.detail = detail
+	error.status = status
+	error.message = message
 	return error
 }
 
-const notFoundException = (detail) => exception(NOT_FOUND, detail)
+const notFoundException = (message) => exception(NOT_FOUND, message)
 
-const badRequestException = (detail) => exception(BAD_REQUEST, detail)
+const badRequestException = (message) => exception(BAD_REQUEST, message)
 
-const unauthorizedException = (detail) => exception(UNAUTHORIZED, detail)
+const unauthorizedException = (message) => exception(UNAUTHORIZED, message)
+
+const forbiddenException = (message) => exception(FORBIDDEN, message)
 
 module.exports = {
 	exception,
 	notFoundException,
 	badRequestException,
 	unauthorizedException,
+	forbiddenException,
 }
