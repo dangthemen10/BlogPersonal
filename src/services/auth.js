@@ -93,8 +93,8 @@ const register = async (email, password) => {
 				email: email,
 				password: hashPassword,
 				role: false,
-				created_at: now,
-				updated_at: now,
+				createdAt: now,
+				updatedAt: now,
 			},
 			{ transaction }
 		)
@@ -110,8 +110,8 @@ const register = async (email, password) => {
 				gender: null,
 				country: null,
 				account_id: account.id,
-				created_at: now,
-				updated_at: now,
+				createdAt: now,
+				updatedAt: now,
 			},
 			{ transaction }
 		)
