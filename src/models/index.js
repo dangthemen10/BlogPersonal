@@ -47,7 +47,7 @@ db.account = require('../models/account')(sequelize, Sequelize)
 db.user = require('../models/user')(sequelize, Sequelize)
 
 //Relations
-db.user.belongsTo(db.account)
-db.account.hasOne(db.user)
+// db.user.belongsTo(db.account)
+// db.account.hasOne(db.user)
 
 module.exports = db

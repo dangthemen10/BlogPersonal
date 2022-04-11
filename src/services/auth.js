@@ -1,9 +1,10 @@
 'use-strict'
 
 const Sequelize = require('sequelize')
-const Op = Sequelize.Op
 const db = require('../models')
 const sequelize = require('../models').sequelize
+const jwt = require('jsonwebtoken')
+const Op = Sequelize.Op
 const UserModel = db.user
 const AccountModel = db.account
 const { badRequestException, notFoundException } = require('../lib/exception')
@@ -25,7 +26,6 @@ const findOneUserByEmail = async (email) => {
 			},
 		},
 	})
-	logger.info(`Result: ${result}`)
 
 	return result
 }
@@ -75,7 +75,6 @@ const register = async (email, password) => {
 	}
 
 	const isEmail = await isEmailExist(email)
-	logger.info(`IsEmail: ${isEmail}`)
 
 	if (isEmail) {
 		throw badRequestException({
@@ -94,8 +93,8 @@ const register = async (email, password) => {
 				email: email,
 				password: hashPassword,
 				role: false,
-				createAt: now,
-				updateAt: now,
+				created_at: now,
+				updated_at: now,
 			},
 			{ transaction }
 		)
@@ -111,8 +110,8 @@ const register = async (email, password) => {
 				gender: null,
 				country: null,
 				account_id: account.id,
-				createAt: now,
-				updateAt: now,
+				created_at: now,
+				updated_at: now,
 			},
 			{ transaction }
 		)
@@ -126,8 +125,8 @@ const register = async (email, password) => {
 	}
 }
 
-const login = async (email, password) => {
-	if (!email || !password) {
+const login = async (email, pass) => {
+	if (!email || !pass) {
 		throw badRequestException({
 			status: 'BAD_REQUEST',
 			message: 'Parameter is not exist!',
@@ -138,10 +137,7 @@ const login = async (email, password) => {
 	const user = await validationUserEmail(email)
 
 	// verify password
-	const checkPassword = await passwordLib.verifyPassword(
-		password,
-		user.password
-	)
+	const checkPassword = await passwordLib.verifyPassword(pass, user.password)
 
 	if (!checkPassword) {
 		throw notFoundException({
@@ -151,7 +147,16 @@ const login = async (email, password) => {
 	}
 
 	logger.info('Check password successfully!')
-	return user
+	const payload = { user: user.email, role: user.role }
+	const options = { expiresIn: '1d' }
+	const secret = process.env.JWT_SECRET_KEY
+	const token = jwt.sign(payload, secret, options)
+	// eslint-disable-next-line no-unused-vars
+	const { password, ...data } = user.dataValues
+	return {
+		...data,
+		token,
+	}
 }
 
 module.exports = {

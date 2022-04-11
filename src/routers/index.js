@@ -11,4 +11,7 @@ router.get('/', async (req, res) => {
 // auth
 router.use(require('./auth'))
 
+// user
+router.use(require('./user'))
+
 module.exports = router
