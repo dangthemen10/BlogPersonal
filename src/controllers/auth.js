@@ -14,6 +14,7 @@ const register = async (req, res, next) => {
 	try {
 		const result = await authServices.register(
 			req.body.email,
+			req.body.userName,
 			req.body.password
 		)
 		return res.status(200).json(result)

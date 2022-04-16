@@ -145,7 +145,7 @@ const updateInformationUser = async (accountId, data) => {
 
 	const user = await UserModel.findOne({
 		where: {
-			account_id: {
+			accountId: {
 				[Op.eq]: account.id,
 			},
 		},
@@ -160,9 +160,8 @@ const updateInformationUser = async (accountId, data) => {
 
 	await UserModel.update(
 		{
-			username: data.username,
-			fullname: data.fullname,
-			day_of_birth: data.birth,
+			fullName: data.fullname,
+			birthDay: data.birth,
 			address: data.address,
 			phone: data.phone,
 			gender: data.gender,
@@ -171,7 +170,7 @@ const updateInformationUser = async (accountId, data) => {
 		},
 		{
 			where: {
-				account_id: {
+				accountId: {
 					[Op.eq]: account.id,
 				},
 			},

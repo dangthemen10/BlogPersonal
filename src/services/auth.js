@@ -64,10 +64,10 @@ const isEmailExist = async (email) => {
  * @param {*} password
  * @returns
  */
-const register = async (email, password) => {
+const register = async (email, userName, password) => {
 	const now = dateUtils.getDateTimeCurrent()
 	const transaction = await sequelize.transaction()
-	if (!email || !password) {
+	if (!email || !password || !userName) {
 		throw badRequestException({
 			status: 'BAD_REQUEST',
 			message: 'Parameter is not exist!',
@@ -91,8 +91,9 @@ const register = async (email, password) => {
 		const account = await AccountModel.create(
 			{
 				email: email,
+				userName: userName,
 				password: hashPassword,
-				role: false,
+				role: 'MEMBER',
 				createdAt: now,
 				updatedAt: now,
 			},
@@ -102,14 +103,14 @@ const register = async (email, password) => {
 		await UserModel.create(
 			{
 				email: email,
-				username: null,
-				fullname: null,
-				day_of_birth: null,
+				userName: userName,
+				fullName: null,
+				birthDay: null,
 				address: null,
 				phone: null,
 				gender: null,
 				country: null,
-				account_id: account.id,
+				accountId: account.id,
 				createdAt: now,
 				updatedAt: now,
 			},
@@ -147,7 +148,12 @@ const login = async (email, pass) => {
 	}
 
 	logger.info('Check password successfully!')
-	const payload = { user: user.email, role: user.role }
+	const payload = {
+		id: user.id,
+		email: user.email,
+		userName: user.userName,
+		role: user.role,
+	}
 	const options = { expiresIn: '1d' }
 	const secret = process.env.JWT_SECRET_KEY
 	const token = jwt.sign(payload, secret, options)

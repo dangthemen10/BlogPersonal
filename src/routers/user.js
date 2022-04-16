@@ -4,13 +4,18 @@ const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/user')
 const { validateHandle } = require('../middleware/errorHandler')
-const { authorizationJWT } = require('../middleware/auth')
+const { verifyAdministrator, verifyToken } = require('../middleware/auth')
 const userVaidation = require('../validation/user')
 
 /**
  * get user list
  */
-router.get('/users', validateHandle, authorizationJWT, userController.getUsers)
+router.get(
+	'/users',
+	validateHandle,
+	verifyAdministrator,
+	userController.getUsers
+)
 
 /**
  * Get account list
@@ -18,7 +23,7 @@ router.get('/users', validateHandle, authorizationJWT, userController.getUsers)
 router.get(
 	'/accounts',
 	validateHandle,
-	authorizationJWT,
+	verifyAdministrator,
 	userController.getAccounts
 )
 
@@ -29,7 +34,7 @@ router.put(
 	'/user/change-password/:id',
 	userVaidation.validationChangePassword(),
 	validateHandle,
-	authorizationJWT,
+	verifyToken,
 	userController.changePassword
 )
 
@@ -39,7 +44,7 @@ router.put(
 router.put(
 	'/user/update-information/:id',
 	validateHandle,
-	authorizationJWT,
+	verifyToken,
 	userController.updateInformationUser
 )
 

@@ -13,13 +13,17 @@ module.exports = {
 				type: Sequelize.STRING,
 				allowNull: false,
 			},
+			userName: {
+				type: Sequelize.STRING,
+				allowNull: false,
+			},
 			password: {
 				type: Sequelize.STRING,
 				allowNull: false,
 			},
 			role: {
-				type: Sequelize.BOOLEAN,
-				defaultValue: false,
+				type: Sequelize.STRING,
+				defaultValue: 'MEMBER',
 			},
 			createdAt: {
 				allowNull: false,

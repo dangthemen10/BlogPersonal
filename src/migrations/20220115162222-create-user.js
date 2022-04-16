@@ -13,13 +13,14 @@ module.exports = {
 				type: Sequelize.STRING,
 				allowNull: false,
 			},
-			username: {
+			userName: {
+				type: Sequelize.STRING,
+				allowNull: false,
+			},
+			fullName: {
 				type: Sequelize.STRING,
 			},
-			fullname: {
-				type: Sequelize.STRING,
-			},
-			day_of_birth: {
+			birthDay: {
 				type: Sequelize.DATE,
 			},
 			address: {
@@ -34,7 +35,7 @@ module.exports = {
 			country: {
 				type: Sequelize.STRING,
 			},
-			account_id: {
+			accountId: {
 				type: Sequelize.INTEGER,
 				references: {
 					model: 'Accounts',

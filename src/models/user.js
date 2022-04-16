@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
 		static associate(models) {
 			// define association here
 			User.belongsTo(models.Account, {
-				foreignKey: 'account_id',
+				foreignKey: 'accountId',
 				targetKey: 'id',
 				as: 'fk_user_acc',
 				foreignKeyConstraint: true,
@@ -20,14 +20,14 @@ module.exports = (sequelize, DataTypes) => {
 	User.init(
 		{
 			email: DataTypes.STRING,
-			username: DataTypes.STRING,
-			fullname: DataTypes.STRING,
-			day_of_birth: DataTypes.DATE,
+			userName: DataTypes.STRING,
+			fullName: DataTypes.STRING,
+			birthDay: DataTypes.DATE,
 			address: DataTypes.STRING,
 			phone: DataTypes.INTEGER,
 			gender: DataTypes.STRING,
 			country: DataTypes.STRING,
-			account_id: DataTypes.INTEGER,
+			accountId: DataTypes.INTEGER,
 		},
 		{
 			sequelize,

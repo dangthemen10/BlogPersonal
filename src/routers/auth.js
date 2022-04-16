@@ -11,7 +11,7 @@ const authVaidation = require('../validation/auth')
  */
 router.post(
 	'/auth/register',
-	authVaidation.validationAuth(),
+	authVaidation.validationRegister(),
 	validateHandle,
 	authController.register
 )
@@ -21,7 +21,7 @@ router.post(
  */
 router.post(
 	'/auth/login',
-	authVaidation.validationAuth(),
+	authVaidation.validationLogin(),
 	validateHandle,
 	authController.login
 )

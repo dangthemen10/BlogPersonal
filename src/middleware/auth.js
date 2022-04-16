@@ -26,7 +26,7 @@ const authorizationJWT = (req, res, next) => {
 		}
 		try {
 			result = jwt.verify(token, process.env.JWT_SECRET_KEY, options)
-			req.decoded = result
+			req.user = result
 			next()
 		} catch (err) {
 			logger.warn(`middleware::auth::authorizationJWT Error ${err}`)
@@ -42,7 +42,42 @@ const authorizationJWT = (req, res, next) => {
 		})
 	}
 }
+/**
+ * Verify Administrator
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+const verifyAdministrator = (req, res, next) => {
+	authorizationJWT(req, res, () => {
+		if (req.user.role === 'ADMIN') {
+			next()
+		} else {
+			res.status(403).json('Not permission')
+		}
+	})
+}
+
+/**
+ * Verify Token
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+const verifyToken = (req, res, next) => {
+	authorizationJWT(req, res, () => {
+		if (req.user.id == req.params.id) {
+			next()
+		} else {
+			res.status(403).json('Not permission')
+		}
+	})
+}
 
 module.exports = {
 	authorizationJWT,
+	verifyAdministrator,
+	verifyToken,
 }
