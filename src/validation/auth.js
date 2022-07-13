@@ -1,4 +1,4 @@
-const { body } = require('express-validator')
+const { body, header } = require('express-validator')
 
 const validationRegister = () => {
 	return [
@@ -39,7 +39,19 @@ const validationLogin = () => {
 	]
 }
 
+const validationRefreshToken = () => {
+	return [
+		header('Cookie')
+			.not()
+			.isEmpty()
+			.withMessage('Cookie is empty')
+			.isString()
+			.withMessage('Cookie is invalid'),
+	]
+}
+
 module.exports = {
 	validationRegister,
 	validationLogin,
+	validationRefreshToken,
 }

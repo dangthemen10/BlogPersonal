@@ -45,6 +45,7 @@ db.Sequelize = Sequelize
 //Models/tables
 db.account = require('../models/account')(sequelize, Sequelize)
 db.user = require('../models/user')(sequelize, Sequelize)
+db.refreshToken = require('../models/refresh_token')(sequelize, Sequelize)
 
 //Relations
 // db.user.belongsTo(db.account)

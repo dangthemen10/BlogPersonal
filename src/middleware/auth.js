@@ -76,8 +76,33 @@ const verifyToken = (req, res, next) => {
 	})
 }
 
+const refreshToken = (req, res, next) => {
+	const token = req.cookies.refreshToken
+	// eslint-disable-next-line no-console
+	console.log('cookie', token)
+	if (token) {
+		jwt.verify(token, process.env.JWT_REFRESH_KEY, (err, user) => {
+			if (err) {
+				logger.warn(`middleware::auth::refreshToken Error ${err}`)
+				throw forbiddenException({
+					status: 'FORBIDDEN',
+					message: 'Token is invalid',
+				})
+			}
+			req.user = user
+			next()
+		})
+	} else {
+		throw unauthorizedException({
+			status: 'UNAUTHORIZED',
+			message: 'Authentication error. Token required.',
+		})
+	}
+}
+
 module.exports = {
 	authorizationJWT,
 	verifyAdministrator,
 	verifyToken,
+	refreshToken,
 }

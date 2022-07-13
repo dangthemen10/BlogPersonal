@@ -4,6 +4,7 @@ const express = require('express')
 const router = express.Router()
 const authController = require('../controllers/auth')
 const { validateHandle } = require('../middleware/errorHandler')
+// const { refreshToken } = require('../middleware/auth')s
 const authVaidation = require('../validation/auth')
 
 /**
@@ -24,6 +25,14 @@ router.post(
 	authVaidation.validationLogin(),
 	validateHandle,
 	authController.login
+)
+
+router.post(
+	'/auth/refresh-token',
+	// authVaidation.validationRefreshToken(),
+	validateHandle,
+	// refreshToken,
+	authController.refreshToken
 )
 
 module.exports = router

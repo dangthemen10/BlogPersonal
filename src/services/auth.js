@@ -3,11 +3,12 @@
 const Sequelize = require('sequelize')
 const db = require('../models')
 const sequelize = require('../models').sequelize
-const jwt = require('jsonwebtoken')
 const Op = Sequelize.Op
 const UserModel = db.user
 const AccountModel = db.account
+const refreshTokenModel = db.refreshToken
 const { badRequestException, notFoundException } = require('../lib/exception')
+const generateToken = require('../lib/generateToken')
 const dateUtils = require('../lib/dateUtils')
 const logger = require('../lib/logger')
 const passwordLib = require('../lib/passwordLib')
@@ -126,7 +127,15 @@ const register = async (email, userName, password) => {
 	}
 }
 
+/**
+ * Login
+ *
+ * @param {*} email
+ * @param {*} pass
+ * @returns
+ */
 const login = async (email, pass) => {
+	const now = dateUtils.getDateTimeCurrent()
 	if (!email || !pass) {
 		throw badRequestException({
 			status: 'BAD_REQUEST',
@@ -148,24 +157,108 @@ const login = async (email, pass) => {
 	}
 
 	logger.info('Check password successfully!')
-	const payload = {
-		id: user.id,
-		email: user.email,
-		userName: user.userName,
-		role: user.role,
+	// access token
+	const generateAccessToken = generateToken.generateAccessToken(
+		user,
+		'30s',
+		process.env.JWT_SECRET_KEY
+	)
+	// refresh token
+	const generateRefreshToken = generateToken.generateAccessToken(
+		user,
+		'7d',
+		process.env.JWT_REFRESH_KEY
+	)
+
+	const token = await refreshTokenModel.findOne({
+		where: {
+			email: {
+				[Op.eq]: user.email,
+			},
+		},
+	})
+
+	if (token == null) {
+		await refreshTokenModel.create({
+			email: user.email,
+			token: generateRefreshToken,
+			createdAt: now,
+			updatedAt: now,
+		})
+	} else {
+		await refreshTokenModel.update(
+			{
+				token: generateRefreshToken,
+				updatedAt: now,
+			},
+			{
+				where: {
+					id: {
+						[Op.eq]: token.id,
+					},
+				},
+			}
+		)
 	}
-	const options = { expiresIn: '1d' }
-	const secret = process.env.JWT_SECRET_KEY
-	const token = jwt.sign(payload, secret, options)
+
 	// eslint-disable-next-line no-unused-vars
 	const { password, ...data } = user.dataValues
 	return {
 		...data,
-		token,
+		generateAccessToken,
+		generateRefreshToken,
+	}
+}
+
+const refreshToken = async (user, token) => {
+	logger.info('Cookie nè:', token)
+	const now = dateUtils.getDateTimeCurrent()
+
+	const result = await refreshTokenModel.findOne({
+		where: {
+			email: user.email,
+		},
+	})
+	if (result == null) {
+		throw notFoundException({
+			status: 'NOT_FOUND',
+			message: 'Not found user',
+		})
+	}
+	// access token
+	const generateNewAccessToken = generateToken.generateAccessToken(
+		user,
+		'30s',
+		process.env.JWT_SECRET_KEY
+	)
+	// refresh token
+	const generateNewRefreshToken = generateToken.generateAccessToken(
+		user,
+		'7d',
+		process.env.JWT_REFRESH_KEY
+	)
+
+	await refreshTokenModel.update(
+		{
+			token: generateNewRefreshToken,
+			updatedAt: now,
+		},
+		{
+			where: {
+				id: {
+					[Op.eq]: result.id,
+				},
+			},
+		}
+	)
+	return {
+		generateNewAccessToken,
+		generateNewRefreshToken,
 	}
 }
 
 module.exports = {
 	register,
 	login,
+	refreshToken,
 }
